@@ -1,7 +1,7 @@
 // src/pages/auth/LoginPage.tsx
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext.tsx';
 import LoadingSpinner from '../../components/LoadingSpinner.tsx';
 
@@ -14,11 +14,11 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   
   const { login, clearError } = useAuth();
-  const location = useLocation();
+  // const location = useLocation();
   const [searchParams] = useSearchParams();
   
   const registered = searchParams.get('registered') === 'true';
-  const from = location.state?.from?.pathname || '/';
+  // const from = location.state?.from?.pathname || '/';
 
   useEffect(() => {
     clearError();

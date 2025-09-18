@@ -8,14 +8,12 @@ export enum AccountType {
 }
 
 export enum SubscriptionPlan {
-  // Individual plans
   FREE = 'FREE',
-  BASIC = 'BASIC',
-  PRO = 'PRO',
-  // Coach plans
+  INDIVIDUAL_BASIC = 'INDIVIDUAL_BASIC',
+  INDIVIDUAL_PRO = 'INDIVIDUAL_PRO',
   COACH_BASIC = 'COACH_BASIC',
   COACH_PRO = 'COACH_PRO',
-  COACH_UNLIMITED = 'COACH_UNLIMITED'
+  COACH_UNLIMITED = 'COACH_UNLIMITED',
 }
 
 export interface User {

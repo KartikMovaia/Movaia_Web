@@ -8,7 +8,7 @@ import { coachService } from '../../../apps/coach/src/services/coach.service';
 import LoadingSpinner from '../../components/LoadingSpinner';
 
 const VideoUploadPage: React.FC = () => {
-  const { user, isCoach } = useAuth();
+  const { isCoach } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoPreviewRef = useRef<HTMLVideoElement>(null);
@@ -24,7 +24,7 @@ const VideoUploadPage: React.FC = () => {
   const [dragActive, setDragActive] = useState(false);
   const [videoDuration, setVideoDuration] = useState<number>(0);
   const [uploadStartTime, setUploadStartTime] = useState<number>(0);
-  const [bytesUploaded, setBytesUploaded] = useState<number>(0);
+  // const [bytesUploaded, setBytesUploaded] = useState<number>(0);
   
   // For coaches - athlete selection
   const [athletes, setAthletes] = useState<any[]>([]);

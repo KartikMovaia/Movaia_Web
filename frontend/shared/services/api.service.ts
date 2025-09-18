@@ -5,7 +5,7 @@ import { ApiError } from '../types/api.types';
 import { tokenService } from './token.service';
 
 /// <reference types="vite/client" />
-const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:5000/api';
+
 
 class ApiService {
   private api: AxiosInstance;

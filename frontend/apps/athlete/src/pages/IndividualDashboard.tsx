@@ -5,6 +5,8 @@ import { useAuth } from '../../../../shared/contexts/AuthContext';
 import { SubscriptionPlan } from '../../../../shared/types/user.types';
 import { useNavigate } from 'react-router-dom';
 
+
+
 const IndividualDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();

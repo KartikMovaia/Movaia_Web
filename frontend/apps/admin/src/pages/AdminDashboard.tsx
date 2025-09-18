@@ -15,7 +15,7 @@ import {
   ArcElement,
   Filler
 } from 'chart.js';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
+
 
 // Register ChartJS components
 ChartJS.register(

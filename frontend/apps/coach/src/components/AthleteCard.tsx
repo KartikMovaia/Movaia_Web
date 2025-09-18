@@ -126,14 +126,14 @@ const AthleteCard: React.FC<AthleteCardProps> = ({ athlete, onUpdate }) => {
           <div className="flex justify-between items-center">
             <span className="text-sm text-[#686868]">Analyses</span>
             <span className="text-sm font-medium text-[#ABD037]">
-              {athlete.stats?.totalAnalyses || athlete._count?.analyses || 0}
+              {athlete.stats?.totalAnalyses || athlete.stats?.totalAnalyses || 0}
             </span>
           </div>
           
           <div className="flex justify-between items-center">
             <span className="text-sm text-[#686868]">This Month</span>
             <span className="text-sm font-medium text-[#ABD037]">
-              {athlete.stats?.monthlyAnalyses || 0}
+              {athlete.stats?.totalAnalyses || 0}
             </span>
           </div>
 
