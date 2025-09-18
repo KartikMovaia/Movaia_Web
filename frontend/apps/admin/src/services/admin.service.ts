@@ -61,6 +61,7 @@ interface UserManagementData {
   total: number;
   page: number;
   limit: number;
+  totalPages: number;
 }
 
 interface RevenueAnalytics {

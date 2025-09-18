@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../../shared/contexts/AuthContext';
+// import { useAuth } from '../../../../shared/contexts/AuthContext';
 import { adminService } from '../services/admin.service';
 import LoadingSpinner from '../../../../shared/components/LoadingSpinner';
 import {
@@ -46,11 +46,11 @@ interface User {
 }
 
 const AdminDashboard: React.FC = () => {
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState<any>(null);
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  // const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [activityLogs, setActivityLogs] = useState<any[]>([]);
   const [systemHealth, setSystemHealth] = useState<any>(null);
   const [dateRange, setDateRange] = useState('30d');
@@ -58,7 +58,7 @@ const AdminDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [showUserModal, setShowUserModal] = useState(false);
+  // const [showUserModal, setShowUserModal] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [notification, setNotification] = useState({ title: '', message: '', userGroup: 'all' });
 
@@ -163,7 +163,7 @@ const AdminDashboard: React.FC = () => {
       } else if (type === 'analytics') {
         blob = await adminService.exportAnalyticsReport('dashboard', dateRange);
       } else {
-        blob = await adminService.exportRevenueReport(dateRange);
+        blob = await adminService.exportRevenueReport('csv',dateRange);
       }
       
       const url = window.URL.createObjectURL(blob);
@@ -434,7 +434,7 @@ const AdminDashboard: React.FC = () => {
                           <td className="px-4 py-3">
                             <div className="flex items-center space-x-2">
                               <button
-                                onClick={() => setSelectedUser(user)}
+                                onClick={() => console.log('View user:', user)}
                                 className="text-blue-600 hover:text-blue-800 text-sm"
                               >
                                 View

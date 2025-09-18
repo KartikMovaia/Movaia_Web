@@ -1,10 +1,9 @@
-// src/services/api.service.ts
+/// <reference types="vite/client" />
 
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import { ApiError } from '../types/api.types';
 import { tokenService } from './token.service';
 
-/// <reference types="vite/client" />
 
 
 class ApiService {
