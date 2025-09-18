@@ -13,6 +13,7 @@ export interface RegisterRequest {
   firstName: string;
   lastName: string;
   accountType: AccountType;
+  runningProfile?: any; // Quick fix, properly type later
 }
 
 export interface TokenPair {

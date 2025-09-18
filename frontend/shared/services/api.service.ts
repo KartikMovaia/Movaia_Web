@@ -4,6 +4,9 @@ import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import { ApiError } from '../types/api.types';
 import { tokenService } from './token.service';
 
+/// <reference types="vite/client" />
+const API_BASE_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:5000/api';
+
 class ApiService {
   private api: AxiosInstance;
   private isRefreshing = false;
@@ -12,6 +15,7 @@ class ApiService {
     reject: (error: any) => void;
   }> = [];
 
+  
   constructor() {
     this.api = axios.create({
       baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
