@@ -5,7 +5,6 @@ import { ApiError } from '../types/api.types';
 import { tokenService } from './token.service';
 
 
-
 class ApiService {
   private api: AxiosInstance;
   private isRefreshing = false;

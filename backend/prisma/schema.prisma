@@ -1,5 +1,4 @@
-// This is your Prisma schema file
-// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+// This is your updated Prisma schema file with new tables for user settings
 
 generator client {
   provider = "prisma-client-js"
@@ -37,6 +36,7 @@ enum SubscriptionStatus {
   CANCELLED
   EXPIRED
   TRIAL
+  PAST_DUE
 }
 
 // Main user model
@@ -65,7 +65,7 @@ model User {
   upgradedAt        DateTime?
   previousCoachId   String?
   
-  // Profile information (existing + new fields)
+  // Profile information
   profileImage      String?
   bio               String?
   height            Float?      // in cm
@@ -74,31 +74,37 @@ model User {
   weeklyMileage     Float?      // in km
   preferredDistance String?     // 5k, 10k, Half Marathon, Marathon, Ultra
   
-  // NEW FIELDS FOR ONBOARDING
+  // Onboarding fields
   primaryGoal       String?     // run_faster, injury_free, not_sure
   injuryHistory     Json?       // Array stored as JSON: ["Plantar fasciitis", "ITB syndrome"]
   gender            String?     // male, female, prefer_not_to_say
   unitPreference    String?     // metric, imperial
   personalBest      Json?       // {distance: 10, time: "00:45:30", unit: "km"}
   
+  // Soft delete
+  deletedAt         DateTime?
+  
   // Timestamps
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
   lastLoginAt       DateTime?
+  lastPasswordChange DateTime?
   
-  // Relations (keep all existing relations)
-  subscription      Subscription?
-  sessions          Session[]
-  analyses          Analysis[]   @relation("UserAnalyses")
-  coachAnalyses     Analysis[]   @relation("CoachUploadedAnalyses")
-  usageRecords      UsageRecord[]
-  notifications     Notification[]
-  activityLogs      ActivityLog[]
+  // Relations
+  subscription           Subscription?
+  notificationPreference NotificationPreference?
+  sessions              Session[]
+  analyses              Analysis[]   @relation("UserAnalyses")
+  coachAnalyses         Analysis[]   @relation("CoachUploadedAnalyses")
+  usageRecords          UsageRecord[]
+  notifications         Notification[]
+  activityLogs          ActivityLog[]
   
   @@index([email])
   @@index([accountType])
   @@index([createdByCoachId])
   @@index([isActive])
+  @@index([deletedAt])
 }
 
 // Subscription model (only for paying users)
@@ -132,16 +138,43 @@ model Subscription {
 model Payment {
   id               String    @id @default(uuid())
   subscriptionId   String
-  amount           Float     // in cents
+  amount           Int       // in cents
   currency         String    @default("USD")
   status           String    // succeeded, failed, pending
   stripePaymentId  String?   @unique
+  invoiceUrl       String?   // URL to Stripe invoice PDF
   
   subscription     Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
   
   createdAt        DateTime  @default(now())
   
   @@index([subscriptionId])
+  @@index([createdAt])
+}
+
+// Notification preferences
+model NotificationPreference {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  
+  // Email notifications
+  emailAnalysis    Boolean  @default(true)
+  emailMarketing   Boolean  @default(false)
+  emailWeekly      Boolean  @default(false)
+  
+  // Push notifications
+  pushAnalysis     Boolean  @default(true)
+  pushUpdates      Boolean  @default(false)
+  pushPromotions   Boolean  @default(false)
+  
+  // SMS notifications
+  smsAlerts        Boolean  @default(false)
+  smsCritical      Boolean  @default(false)
+  
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 // Session management for JWT tokens
@@ -160,6 +193,7 @@ model Session {
   @@index([userId])
   @@index([token])
   @@index([refreshToken])
+  @@index([expiresAt])
 }
 
 // Analysis status

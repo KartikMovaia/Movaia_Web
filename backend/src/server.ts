@@ -1,14 +1,18 @@
+// backend/src/server.ts
+
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
-
 
 // Import routes
 import authRoutes from './modules/auth/routes/auth.routes';
 import coachRoutes from './modules/coach/routes/coach.routes';
 import adminRoutes from './modules/admin/routes/admin.routes';
 import videoRoutes from './modules/video/routes/video.routes';
+import { userRoutes, publicUserRoutes } from './modules/user/routes/user.routes';
+import { handleStripeWebhook } from './modules/user/controllers/billing.controller';
+
 // Load environment variables
 dotenv.config();
 
@@ -18,6 +22,9 @@ const prisma = new PrismaClient();
 // Create Express app
 const app: Express = express();
 const PORT = process.env.PORT || 5000;
+
+// Stripe webhook needs raw body
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 // Middleware
 app.use(cors({
@@ -39,7 +46,7 @@ if (process.env.NODE_ENV === 'development') {
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
     status: 'ok',
-    message: 'Running Form Analysis API is running',
+    message: 'Movaia API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV
   });
@@ -89,11 +96,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/coach', coachRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/videos', videoRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api', publicUserRoutes); // Public routes (plans, etc.)
 
 // Basic route for testing
 app.get('/api', (req: Request, res: Response) => {
   res.json({
-    message: 'Welcome to Running Form Analysis API',
+    message: 'Welcome to Movaia API',
     version: '1.0.0',
     endpoints: {
       health: '/api/health',
@@ -105,6 +114,44 @@ app.get('/api', (req: Request, res: Response) => {
         me: 'GET /api/auth/me',
         refresh: 'POST /api/auth/refresh',
         changePassword: 'POST /api/auth/change-password'
+      },
+      user: {
+        profile: {
+          get: 'GET /api/user/profile',
+          update: 'PUT /api/user/profile',
+          uploadImage: 'POST /api/user/profile/image',
+          deleteImage: 'DELETE /api/user/profile/image'
+        },
+        subscription: {
+          current: 'GET /api/user/subscription',
+          upgrade: 'POST /api/user/subscription/upgrade',
+          downgrade: 'POST /api/user/subscription/downgrade',
+          cancel: 'POST /api/user/subscription/cancel',
+          reactivate: 'POST /api/user/subscription/reactivate'
+        },
+        billing: {
+          history: 'GET /api/user/billing/history',
+          paymentMethods: 'GET /api/user/payment-methods',
+          addPaymentMethod: 'POST /api/user/payment-methods',
+          deletePaymentMethod: 'DELETE /api/user/payment-methods/:id',
+          setDefaultPaymentMethod: 'PUT /api/user/payment-methods/:id/default',
+          downloadInvoice: 'GET /api/user/invoices/:paymentId'
+        },
+        security: {
+          sessions: 'GET /api/user/security/sessions',
+          revokeSession: 'DELETE /api/user/security/sessions/:sessionId',
+          enable2FA: 'POST /api/user/security/2fa/enable',
+          verify2FA: 'POST /api/user/security/2fa/verify',
+          disable2FA: 'POST /api/user/security/2fa/disable'
+        },
+        notifications: {
+          preferences: 'GET /api/user/notifications/preferences',
+          updatePreferences: 'PUT /api/user/notifications/preferences'
+        },
+        account: {
+          exportData: 'GET /api/user/export-data',
+          delete: 'DELETE /api/user/account'
+        }
       },
       coach: {
         createAthlete: 'POST /api/coach/athletes',
@@ -172,10 +219,10 @@ app.use((req: Request, res: Response) => {
 
 // Start server
 const server = app.listen(PORT, () => {
-  console.log(`âš¡ï¸[server]: Server is running at http://localhost:${PORT}`);
-  console.log(`âš¡ï¸[server]: API endpoints available at http://localhost:${PORT}/api`);
-  console.log(`âš¡ï¸[server]: Environment: ${process.env.NODE_ENV}`);
-  console.log(`âš¡ï¸[server]: Admin dashboard available at http://localhost:${PORT}/api/admin`);
+  console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
+  console.log(`⚡️[server]: API endpoints available at http://localhost:${PORT}/api`);
+  console.log(`⚡️[server]: Environment: ${process.env.NODE_ENV}`);
+  console.log(`⚡️[server]: Admin dashboard available at http://localhost:${PORT}/api/admin`);
 });
 
 // Graceful shutdown

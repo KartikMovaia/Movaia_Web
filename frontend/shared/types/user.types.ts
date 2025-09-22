@@ -29,9 +29,32 @@ export interface User {
   mustChangePassword?: boolean;
   requirePasswordChange?: boolean; // alias for mustChangePassword
   profileImage?: string | null;
+  
+  // Profile/Onboarding fields - ADD THESE
+  primaryGoal?: string | null;
+  injuryHistory?: string[] | null;
+  gender?: string | null;
+  unitPreference?: string | null;
+  height?: number | null;
+  weight?: number | null;
+  runningExperience?: string | null;
+  weeklyMileage?: number | null;
+  preferredDistance?: string | null;
+  dateOfBirth?: string | null;
+  personalBest?: {
+    distance: number;
+    time: string;
+    unit: string;
+  } | null;
+  phoneNumber?: string | null;
+  bio?: string | null;
+  
+  // Timestamps
   createdAt?: string;
   updatedAt?: string;
   lastLoginAt?: string | null;
+  
+  // Relations
   coachId?: string | null;
   createdByCoach?: {
     id: string;
@@ -71,4 +94,22 @@ export interface UpdateAthleteRequest {
 
 export interface AthleteWithStats extends User {
   stats: UserStats;
+}
+
+// Add this interface for the registration data structure
+export interface RunningProfile {
+  primaryGoal?: string | null;
+  injuryHistory?: string[];
+  preferredDistance?: string | null;
+  unitPreference?: 'metric' | 'imperial' | null;
+  gender?: string | null;
+  height?: number | null;
+  weight?: number | null;
+  weightUnit?: 'kg' | 'lbs';
+  dateOfBirth?: string | null;
+  personalBest?: {
+    distance: number | null;
+    time: string | null;
+    unit: string;
+  } | null;
 }
