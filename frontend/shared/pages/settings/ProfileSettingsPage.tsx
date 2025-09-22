@@ -5,11 +5,8 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import { 
   User, 
   CreditCard, 
-  Shield, 
-  Key,
-  Calendar,
+  Shield,
   DollarSign,
-  TrendingUp,
   Users,
   Activity,
   Monitor,
@@ -20,6 +17,16 @@ import {
 
 interface ProfileSettingsPageProps {
   initialTab?: string;
+}
+
+// Add PlanCard props interface
+interface PlanCardProps {
+  name: string;
+  price: number;
+  features: string[];
+  current: boolean;
+  popular?: boolean;
+  onSelect: () => void;
 }
 
 const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ initialTab = 'profile' }) => {
@@ -52,11 +59,10 @@ const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ initialTab = 
   const [subscriptionData, setSubscriptionData] = useState<any>(null);
   const [availablePlans, setAvailablePlans] = useState<any[]>([]);
   const [billingHistory, setBillingHistory] = useState<any[]>([]);
-  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  // Removed paymentMethods since it's not being used
 
   // Security data state
   const [sessions, setSessions] = useState<any[]>([]);
-  const [lastPasswordChange, setLastPasswordChange] = useState<string | null>(null);
 
   // Admin metrics state (for admin users)
   const [adminMetrics, setAdminMetrics] = useState<any>(null);
@@ -121,7 +127,7 @@ const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ initialTab = 
 
   const loadSubscriptionData = async () => {
     try {
-      const [subscription, plans, history, methods] = await Promise.all([
+      const [subscription, plans, history] = await Promise.all([
         userSettingsService.getCurrentSubscription(),
         userSettingsService.getAvailablePlans(),
         userSettingsService.getBillingHistory({ limit: 10 }),
@@ -131,7 +137,7 @@ const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ initialTab = 
       setSubscriptionData(subscription);
       setAvailablePlans(plans);
       setBillingHistory(history.payments);
-      setPaymentMethods(methods);
+      // Removed setPaymentMethods since we're not using it
     } catch (error) {
       console.error('Failed to load subscription data:', error);
       if (user?.subscription) {
@@ -144,7 +150,6 @@ const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ initialTab = 
     try {
       const sessionsData = await userSettingsService.getSessions();
       setSessions(sessionsData);
-      setLastPasswordChange(user?.lastPasswordChange || null);
     } catch (error) {
       console.error('Failed to load security data:', error);
     }
@@ -162,7 +167,7 @@ const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ initialTab = 
   const handleSaveProfile = async () => {
     setSaving(true);
     try {
-      const updatedProfile = await userSettingsService.updateProfile({
+      await userSettingsService.updateProfile({
         firstName: profileData.firstName,
         lastName: profileData.lastName,
         phoneNumber: profileData.phoneNumber || undefined,
@@ -658,7 +663,7 @@ const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ initialTab = 
                             <div>
                               <h3 className="font-semibold text-neutral-900">Password</h3>
                               <p className="text-sm text-neutral-600 mt-1">
-                                {lastPasswordChange ? `Last changed ${formatDate(lastPasswordChange)}` : 'Never changed'}
+                                Change your password to keep your account secure
                               </p>
                             </div>
                             <button 
@@ -687,7 +692,7 @@ const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ initialTab = 
                                         </p>
                                       </div>
                                     </div>
-                                    {session.id === user.currentSessionId ? (
+                                    {session.isCurrent ? (
                                       <span className="text-green-600 text-sm">Current</span>
                                     ) : (
                                       <button 
@@ -771,8 +776,8 @@ const ProfileSettingsPage: React.FC<ProfileSettingsPageProps> = ({ initialTab = 
   );
 };
 
-// Helper Component
-const PlanCard = ({ name, price, features, current, popular, onSelect }) => (
+// Helper Component with proper TypeScript types
+const PlanCard: React.FC<PlanCardProps> = ({ name, price, features, current, popular, onSelect }) => (
   <div className={`p-6 rounded-xl border ${current ? 'border-primary-500 bg-primary-50' : 'border-neutral-200'} ${popular ? 'relative' : ''}`}>
     {popular && (
       <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary-500 text-white text-xs font-semibold rounded-full">
@@ -784,7 +789,7 @@ const PlanCard = ({ name, price, features, current, popular, onSelect }) => (
       ${price}<span className="text-sm font-normal text-neutral-500">/mo</span>
     </p>
     <ul className="mt-4 space-y-2">
-      {features.map((feature, i) => (
+      {features.map((feature: string, i: number) => (
         <li key={i} className="flex items-start">
           <Check className="w-5 h-5 text-green-500 mr-2 flex-shrink-0" />
           <span className="text-sm text-neutral-600">{feature}</span>
