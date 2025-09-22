@@ -589,65 +589,6 @@ export const revokeSession = async (req: Request, res: Response): Promise<void> 
 };
 
 /**
- * Get notification preferences
- */
-export const getNotificationPreferences = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const userId = req.currentUser?.id;
-
-    let preferences = await prisma.notificationPreference.findUnique({
-      where: { userId }
-    });
-
-    if (!preferences) {
-      // Create default preferences
-      preferences = await prisma.notificationPreference.create({
-        data: {
-          userId,
-          emailAnalysis: true,
-          emailMarketing: false,
-          pushAnalysis: true,
-          pushUpdates: false,
-          smsAlerts: false
-        }
-      });
-    }
-
-    res.json({ preferences });
-  } catch (error) {
-    console.error('Get notification preferences error:', error);
-    res.status(500).json({ error: 'Failed to get notification preferences' });
-  }
-};
-
-/**
- * Update notification preferences
- */
-export const updateNotificationPreferences = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const userId = req.currentUser?.id;
-    const updates = req.body;
-
-    const preferences = await prisma.notificationPreference.upsert({
-      where: { userId },
-      update: updates,
-      create: {
-        userId,
-        ...updates
-      }
-    });
-
-    res.json({ 
-      message: 'Notification preferences updated',
-      preferences 
-    });
-  } catch (error) {
-    console.error('Update notification preferences error:', error);
-    res.status(500).json({ error: 'Failed to update notification preferences' });
-  }
-};
-
-/**
  * Export user data (GDPR compliance)
  */
 export const exportUserData = async (req: Request, res: Response): Promise<void> => {
@@ -673,8 +614,7 @@ export const exportUserData = async (req: Request, res: Response): Promise<void>
             createdAt: true,
             metadata: true
           }
-        },
-        notifications: true
+        }
       }
     });
 
