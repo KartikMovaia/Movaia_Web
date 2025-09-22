@@ -13,8 +13,6 @@ import {
   getPaymentMethods,
   getSessions,
   revokeSession,
-  getNotificationPreferences,
-  updateNotificationPreferences,
   exportUserData,
   deleteAccount,
   cancelSubscription
@@ -74,10 +72,6 @@ router.get('/invoices/:paymentId', downloadInvoice);
 // Security routes (without 2FA)
 router.get('/security/sessions', getSessions);
 router.delete('/security/sessions/:sessionId', revokeSession);
-
-// Notification routes
-router.get('/notifications/preferences', getNotificationPreferences);
-router.put('/notifications/preferences', updateNotificationPreferences);
 
 // Account management routes
 router.get('/export-data', exportUserData);

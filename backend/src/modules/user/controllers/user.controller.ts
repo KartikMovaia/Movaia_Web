@@ -678,7 +678,6 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
       where: { id: userId },
       data: {
         isActive: false,
-        deletedAt: new Date(),
         email: `deleted_${Date.now()}_${user!.email}` // Prevent email reuse
       }
     });
